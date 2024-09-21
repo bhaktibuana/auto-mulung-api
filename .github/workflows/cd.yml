@@ -1,0 +1,42 @@
+name: cd
+
+on:
+    push:
+        branches:
+            - main
+            - staging
+    pull_request:
+        branches:
+            - main
+            - staging
+
+jobs:
+    cd:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Prod Deployment
+              if: ${{ (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')) || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'staging')) }}
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  password: ${{ secrets.SSH_PASSWORD }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  passphrase: ${{ secrets.SSH_PASSPHRASE }}
+                  port: 22
+                  script: |
+                      cd ~/app/auto-mulung/auto-mulung-api
+                      git pull origin main
+                      rm -f .env.prod
+                      echo "NODE_ENV=production" >> .env.prod
+                      echo "DOCKER_ENVIRONMENT=true" > .env.prod
+                      echo "PORT=${{ secrets.PROD_PORT }}" >> .env.prod
+                      echo "MAIN_DB_DSN=${{ secrets.PROD_MAIN_DB_DSN }}" >> .env.prod
+                      echo "MAIN_DB_NAME=${{ secrets.PROD_MAIN_DB_NAME }}" >> .env.prod
+                      echo "BASE_URL=${{ secrets.PROD_BASE_URL }}" >> .env.prod
+                      docker-compose -f docker-compose.prod.yml build --no-cache
+                      docker-compose -f docker-compose.prod.yml up -d --force-recreate
