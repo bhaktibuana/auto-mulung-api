@@ -13,7 +13,7 @@ import {
 export abstract class Model<T extends Document> {
 	protected model: MongoModel<T>;
 	private baseQuery: RootQuerySelector<T> = { deleted_at: null };
-	private baseProjection: ProjectionType<T> = { __v: -1 };
+	private baseProjection: ProjectionType<T> = { __v: 0 };
 	private defaultOptions: QueryOptions<T> = { sort: { created_at: -1 } };
 
 	constructor(model: MongoModel<T>) {
@@ -45,10 +45,8 @@ export abstract class Model<T extends Document> {
 		options: QueryOptions<T> = this.defaultOptions,
 	): Promise<T[]> {
 		const queryPayload = { ...query, ...this.baseQuery };
-		const projectionPayload: ProjectionType<T> = {
-			...(projection as object),
-			...(this.baseProjection as object),
-		};
+		const projectionPayload: ProjectionType<T> =
+			projection || this.baseProjection;
 
 		try {
 			return await this.model
@@ -73,10 +71,8 @@ export abstract class Model<T extends Document> {
 		options: QueryOptions<T> = this.defaultOptions,
 	): Promise<T | null> {
 		const queryPayload = { ...query, ...this.baseQuery };
-		const projectionPayload: ProjectionType<T> = {
-			...(projection as object),
-			...(this.baseProjection as object),
-		};
+		const projectionPayload: ProjectionType<T> =
+			projection || this.baseProjection;
 
 		try {
 			return await this.model

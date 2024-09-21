@@ -4,7 +4,7 @@ import { SystemLog } from '@/app/models';
 import { AppError } from '@/shared/utils';
 import { T_AppErrorData } from '@/shared/types';
 
-export abstract class Service {
+export abstract class Repository {
 	protected readonly STATUS_CODE = StatusCodes;
 
 	/**
