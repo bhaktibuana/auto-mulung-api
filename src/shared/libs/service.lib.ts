@@ -19,7 +19,12 @@ export abstract class Service {
 		message: string,
 		errorData: T_AppErrorData = null,
 	): void {
-		throw new AppError(statusCode, message, errorData);
+		throw new AppError(
+			statusCode,
+			message,
+			errorData,
+			this.constructor.name,
+		);
 	}
 
 	/**
@@ -45,5 +50,28 @@ export abstract class Service {
 			data,
 		};
 		await systemLog.save();
+	}
+
+	/**
+	 * Service Catch Error Handler
+	 *
+	 * @param error
+	 * @param functionName
+	 */
+	protected async catchErrorHandler(
+		error: unknown,
+		functionName: string,
+	): Promise<void> {
+		if (error instanceof AppError) {
+			if (error.sourceError === this.constructor.name) {
+				await this.systemLog(functionName, error);
+				this.errorHandler(error.statusCode, error.message, error);
+			}
+		} else {
+			await this.systemLog(functionName, error);
+		}
+		const errorMessage =
+			(error as { message: string }).message || 'Internal Server Error';
+		this.errorHandler(500, errorMessage, error);
 	}
 }

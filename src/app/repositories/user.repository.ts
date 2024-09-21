@@ -26,8 +26,7 @@ export class UserRepository extends Repository {
 		try {
 			return await user.findOne(query, projection, options);
 		} catch (error) {
-			await this.systemLog(this.create.name, error);
-			this.errorHandler(500, 'Internal Server Error', error);
+			await this.catchErrorHandler(error, this.findOne.name);
 		}
 		return null;
 	}
@@ -59,8 +58,7 @@ export class UserRepository extends Repository {
 		try {
 			return await user.save();
 		} catch (error) {
-			await this.systemLog(this.create.name, error);
-			this.errorHandler(500, 'Internal Server Error', error);
+			await this.catchErrorHandler(error, this.create.name);
 		}
 		return null;
 	}

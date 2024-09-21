@@ -3,16 +3,25 @@ import { Request, Response } from 'express';
 import { Controller } from '@/shared/libs';
 import { UserRegisterRequestBody } from '@/transport/requests/user.request';
 import { UserService } from '@/app/services';
+import { UserResponse } from '@/transport/responses/user.response';
 
 export class UserController extends Controller {
 	private userSvc: UserService;
+	private userRes: UserResponse;
 
 	constructor() {
 		super();
 
 		this.userSvc = new UserService();
+		this.userRes = new UserResponse();
 	}
 
+	/**
+	 * User Register Controller
+	 *
+	 * @param req
+	 * @param res
+	 */
 	public async register(req: Request, res: Response): Promise<void> {
 		try {
 			const reqBody = await this.getRequestBody(
@@ -26,11 +35,10 @@ export class UserController extends Controller {
 				res,
 				'Register success',
 				this.STATUS_CODE.CREATED,
-				result,
+				this.userRes.register(result),
 			);
 		} catch (error) {
-			await this.systemLog(this.register.name, error);
-			this.errorResponse(res, error);
+			await this.catchErrorHandler(res, error, this.register.name);
 		}
 	}
 }

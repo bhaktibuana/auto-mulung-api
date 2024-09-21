@@ -33,7 +33,12 @@ export abstract class Controller {
 		message: string,
 		errorData: T_AppErrorData = null,
 	): void {
-		throw new AppError(statusCode, message, errorData);
+		throw new AppError(
+			statusCode,
+			message,
+			errorData,
+			this.constructor.name,
+		);
 	}
 
 	/**
@@ -167,5 +172,26 @@ export abstract class Controller {
 			data,
 		};
 		await systemLog.save();
+	}
+
+	/**
+	 * Controller Catch Error Handler
+	 *
+	 * @param res
+	 * @param error
+	 * @param functionName
+	 */
+	protected async catchErrorHandler(
+		res: Response,
+		error: unknown,
+		functionName: string,
+	): Promise<void> {
+		if (error instanceof AppError) {
+			if (error.sourceError === this.constructor.name)
+				await this.systemLog(functionName, error);
+		} else {
+			await this.systemLog(functionName, error);
+		}
+		this.errorResponse(res, error);
 	}
 }
