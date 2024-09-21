@@ -8,5 +8,6 @@ export class UserRouter extends Router<UserController> {
 		super(router, '/user', new UserController());
 
 		this.post('/register', this.controller.register);
+		this.post('/login', this.controller.login);
 	}
 }

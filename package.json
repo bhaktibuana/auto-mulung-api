@@ -1,13 +1,13 @@
 {
-  "name": "auto-mulung-api",
-  "version": "1.0.0",
-  "description": "Auto Mulung API",
-  "main": "./src/cmd/main.ts",
-  "repository": "https://github.com/bhaktibuana/auto-mulung-api.git",
-  "author": "Bhakti Mega Buana <bhakti@orderonline.id>",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
+	"name": "auto-mulung-api",
+	"version": "1.0.0",
+	"description": "Auto Mulung API",
+	"main": "./src/cmd/main.ts",
+	"repository": "https://github.com/bhaktibuana/auto-mulung-api.git",
+	"author": "Bhakti Mega Buana <bhakti@orderonline.id>",
+	"license": "MIT",
+	"private": true,
+	"scripts": {
 		"build:prod": "cross-env NODE_ENV=production && webpack",
 		"build:dev": "cross-env NODE_ENV=development && tsc --project tsconfig.test.json",
 		"dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only -r tsconfig-paths/register ./src/cmd/main.ts",
@@ -19,6 +19,7 @@
 		"@types/cors": "^2.8.17",
 		"@types/express": "^4.17.21",
 		"@types/jest": "^29.5.12",
+		"@types/jsonwebtoken": "^9.0.7",
 		"@types/mongoose": "^5.11.97",
 		"@types/node-cron": "^3.0.11",
 		"copy-webpack-plugin": "^12.0.2",
@@ -47,6 +48,7 @@
 		"express": "^4.19.2",
 		"helmet": "^7.1.0",
 		"http-status-codes": "^2.3.0",
+		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.6.1",
 		"node-cron": "^3.0.3"
 	}

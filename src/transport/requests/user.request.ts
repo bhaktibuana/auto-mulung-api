@@ -67,3 +67,14 @@ export class UserRegisterRequestBody {
 	@MatchPasswords('password')
 	password_confirmation!: string;
 }
+
+export class UserLoginRequestBody {
+	@IsString()
+	@IsNotEmpty()
+	@IsEmail({}, { message: 'Email must be a valid email address' })
+	email!: string;
+
+	@IsString()
+	@IsNotEmpty()
+	password!: string;
+}

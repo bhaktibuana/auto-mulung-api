@@ -7,12 +7,27 @@ export class UserResponse {
 	 * @param payload
 	 * @returns
 	 */
-	public register(payload: S_User | null): S_User | null {
+	public register(payload: S_User | null) {
 		if (!payload) return null;
 		return {
 			_id: payload.id,
 			email: payload.email,
 			is_verified: payload.is_verified,
-		} as S_User;
+		};
+	}
+
+	/**
+	 * User Login Response
+	 *
+	 * @param payload
+	 * @returns
+	 */
+	public login(payload: { user: S_User | null; token: string } | null) {
+		if (!payload || !payload.user) return null;
+		return {
+			_id: payload.user.id,
+			email: payload.user.email,
+			token: payload.token,
+		};
 	}
 }

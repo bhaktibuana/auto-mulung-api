@@ -1,6 +1,9 @@
 import { Helper } from '@/shared/helpers';
 import { Service } from '@/shared/libs';
-import { UserRegisterRequestBody } from '@/transport/requests/user.request';
+import {
+	UserLoginRequestBody,
+	UserRegisterRequestBody,
+} from '@/transport/requests/user.request';
 import { UserRepository } from '@/app/repositories';
 import { S_User } from '@/app/models';
 
@@ -39,6 +42,40 @@ export class UserService extends Service {
 				reqBody.email.toLowerCase(),
 				Helper.hash(reqBody.password),
 			);
+		} catch (error) {
+			await this.catchErrorHandler(error, this.register.name);
+		}
+		return null;
+	}
+
+	/**
+	 * User Login Service
+	 *
+	 * @param reqBody
+	 * @returns
+	 */
+	public async login(reqBody: UserLoginRequestBody) {
+		try {
+			const payload = {
+				email: reqBody.email.toLowerCase(),
+				password: Helper.hash(reqBody.password),
+			};
+
+			const user = await this.userRepo.findOne(
+				{
+					email: payload.email,
+					password: payload.password,
+				},
+				{ email: 1, is_verified: 1 },
+			);
+
+			if (!user) this.errorHandler(404, 'Wrong email or password');
+			if (user && !user.is_verified)
+				this.errorHandler(400, 'Unverified user');
+
+			const token = Helper.generateJWT(user?.toObject(), '7d');
+
+			return { user, token };
 		} catch (error) {
 			await this.catchErrorHandler(error, this.register.name);
 		}

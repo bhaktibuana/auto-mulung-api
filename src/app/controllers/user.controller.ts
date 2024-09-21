@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 
 import { Controller } from '@/shared/libs';
-import { UserRegisterRequestBody } from '@/transport/requests/user.request';
+import {
+	UserLoginRequestBody,
+	UserRegisterRequestBody,
+} from '@/transport/requests/user.request';
 import { UserService } from '@/app/services';
 import { UserResponse } from '@/transport/responses/user.response';
 
@@ -39,6 +42,32 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.register.name);
+		}
+	}
+
+	/**
+	 * User Login Controller
+	 *
+	 * @param req
+	 * @param res
+	 */
+	public async login(req: Request, res: Response): Promise<void> {
+		try {
+			const reqBody = await this.getRequestBody(
+				UserLoginRequestBody,
+				req,
+			);
+
+			const result = await this.userSvc.login(reqBody);
+
+			this.response(
+				res,
+				'Login success',
+				this.STATUS_CODE.OK,
+				this.userRes.login(result),
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.login.name);
 		}
 	}
 }

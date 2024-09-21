@@ -1,6 +1,9 @@
 import crypto from 'crypto';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 import { Constant } from '@/shared/constants';
+import { T_JWTPayload } from '@/shared/types';
+import { Config } from '@/config';
 
 export class Helper {
 	/**
@@ -46,5 +49,26 @@ export class Helper {
 		}
 
 		return username;
+	}
+
+	/**
+	 * Generate JWT
+	 *
+	 * @param payload
+	 * @param expiresIn
+	 * @returns
+	 */
+	public static generateJWT(
+		payload: T_JWTPayload,
+		expiresIn?: SignOptions['expiresIn'],
+	): string {
+		return expiresIn
+			? jwt.sign(payload, Config.app.JWT_SECRET_KEY, {
+					algorithm: 'HS256',
+					expiresIn,
+				} as SignOptions)
+			: jwt.sign(payload, Config.app.JWT_SECRET_KEY, {
+					algorithm: 'HS256',
+				} as SignOptions);
 	}
 }
