@@ -6,8 +6,8 @@ module.exports = {
 	entry: './src/cmd/main.ts',
 	target: 'node',
 	output: {
-		filename: 'index.js',
-		path: path.resolve(__dirname, 'dist'),
+		filename: 'main.js',
+		path: path.resolve(__dirname, './dist/cmd'),
 		clean: true,
 	},
 	resolve: {
