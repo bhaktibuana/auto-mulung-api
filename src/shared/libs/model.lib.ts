@@ -87,11 +87,15 @@ export abstract class Model<T extends Document> {
 	 * Find One by _id
 	 *
 	 * @param id
+	 * @param projection
 	 * @returns
 	 */
-	public async findById(id: ObjectId): Promise<T | null> {
+	public async findById(
+		id: ObjectId,
+		projection?: ProjectionType<T>,
+	): Promise<T | null> {
 		const query = { _id: id } as RootQuerySelector<T>;
-		return await this.findOne(query);
+		return await this.findOne(query, projection);
 	}
 
 	/**

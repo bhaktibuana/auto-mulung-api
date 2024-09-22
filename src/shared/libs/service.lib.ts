@@ -72,6 +72,6 @@ export abstract class Service {
 		}
 		const errorMessage =
 			(error as { message: string }).message || 'Internal Server Error';
-		this.errorHandler(500, errorMessage, error);
+		this.errorHandler(this.STATUS_CODE.INTERNAL_SERVER_ERROR, errorMessage, error);
 	}
 }

@@ -1,3 +1,5 @@
+import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
+
 export interface I_Pagination {
 	total_items?: number;
 	total_pages?: number;
@@ -14,4 +16,9 @@ export interface I_HTTPResponse<T> {
 	data: T | null;
 	error: T | null;
 	pagination: I_Pagination | null;
+}
+
+export interface I_VerifiedJWT<T> {
+	error: VerifyErrors | null;
+	decoded: (JwtPayload & T) | Object;
 }

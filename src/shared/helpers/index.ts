@@ -4,6 +4,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { Constant } from '@/shared/constants';
 import { T_JWTPayload } from '@/shared/types';
 import { Config } from '@/config';
+import { I_VerifiedJWT } from '@/shared/interfaces';
 
 export class Helper {
 	/**
@@ -70,5 +71,27 @@ export class Helper {
 			: jwt.sign(payload, Config.app.JWT_SECRET_KEY, {
 					algorithm: 'HS256',
 				} as SignOptions);
+	}
+
+	/**
+	 * Verify JWT
+	 *
+	 * @param token
+	 * @returns
+	 */
+	public static verifyJWT<T>(token: string): I_VerifiedJWT<T> {
+		let error: I_VerifiedJWT<T>['error'] = null;
+		let decoded: I_VerifiedJWT<T>['decoded'] = {};
+
+		jwt.verify(
+			token,
+			Config.app.JWT_SECRET_KEY,
+			{ algorithms: ['HS256'] },
+			(err, dec) => {
+				error = err;
+				decoded = dec as I_VerifiedJWT<T>['decoded'];
+			},
+		);
+		return { error, decoded };
 	}
 }

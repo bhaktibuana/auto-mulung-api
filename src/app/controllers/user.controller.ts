@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { Controller } from '@/shared/libs';
+import { Controller } from '@/shared/libs/controller.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
@@ -68,6 +68,19 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.login.name);
+		}
+	}
+
+	public async me(_req: Request, res: Response): Promise<void> {
+		try {
+			this.response(
+				res,
+				'User data',
+				this.STATUS_CODE.OK,
+				this.getLocals(res).user,
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.me.name);
 		}
 	}
 }

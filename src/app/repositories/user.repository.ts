@@ -1,6 +1,7 @@
 import { ProjectionType, QueryOptions, RootQuerySelector } from 'mongoose';
+import { ObjectId } from 'bson';
 
-import { Repository } from '@/shared/libs';
+import { Repository } from '@/shared/libs/repository.lib';
 import { S_User, User } from '@/app/models';
 import { Helper } from '@/shared/helpers';
 
@@ -59,6 +60,26 @@ export class UserRepository extends Repository {
 			return await user.save();
 		} catch (error) {
 			await this.catchErrorHandler(error, this.create.name);
+		}
+		return null;
+	}
+
+	/**
+	 * Find One User by _id
+	 *
+	 * @param id
+	 * @param projection
+	 * @returns
+	 */
+	public async findById(
+		id: ObjectId,
+		projection?: ProjectionType<S_User>,
+	): Promise<S_User | null> {
+		const user = new User();
+		try {
+			return await user.findById(id, projection);
+		} catch (error) {
+			await this.catchErrorHandler(error, this.findOne.name);
 		}
 		return null;
 	}

@@ -1,5 +1,7 @@
+import { ObjectId } from 'bson';
+
 import { Helper } from '@/shared/helpers';
-import { Service } from '@/shared/libs';
+import { Service } from '@/shared/libs/service.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
@@ -36,7 +38,11 @@ export class UserService extends Service {
 				},
 				{ email: 1 },
 			);
-			if (user) this.errorHandler(400, 'Email already exist');
+			if (user)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Email already exist',
+				);
 
 			return await this.userRepo.create(
 				reqBody.email.toLowerCase(),
@@ -69,15 +75,45 @@ export class UserService extends Service {
 				{ email: 1, is_verified: 1 },
 			);
 
-			if (!user) this.errorHandler(404, 'Wrong email or password');
+			if (!user)
+				this.errorHandler(
+					this.STATUS_CODE.NOT_FOUND,
+					'Wrong email or password',
+				);
 			if (user && !user.is_verified)
-				this.errorHandler(400, 'Unverified user');
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Unverified user',
+				);
 
 			const token = Helper.generateJWT(user?.toObject(), '7d');
 
 			return { user, token };
 		} catch (error) {
-			await this.catchErrorHandler(error, this.register.name);
+			await this.catchErrorHandler(error, this.login.name);
+		}
+		return null;
+	}
+
+	/**
+	 * User Me Service
+	 *
+	 * @param id
+	 * @returns
+	 */
+	public async me(id: string): Promise<S_User | null> {
+		try {
+			const user = await this.userRepo.findById(new ObjectId(id), {
+				password: 0,
+				__v: 0,
+			});
+
+			if (!user)
+				this.errorHandler(this.STATUS_CODE.NOT_FOUND, 'User not found');
+
+			return user;
+		} catch (error) {
+			await this.catchErrorHandler(error, this.me.name);
 		}
 		return null;
 	}

@@ -1,6 +1,6 @@
 import { Router as ExpressRouter } from 'express';
 
-import { Router } from '@/shared/libs';
+import { Router } from '@/shared/libs/router.lib';
 import { UserController } from '@/app/controllers';
 
 export class UserRouter extends Router<UserController> {
@@ -9,5 +9,6 @@ export class UserRouter extends Router<UserController> {
 
 		this.post('/register', this.controller.register);
 		this.post('/login', this.controller.login);
+		this.get('/me', this.controller.me, ['auth']);
 	}
 }

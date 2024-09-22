@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import mongoose, { Schema, Model as MongoModel, Document } from 'mongoose';
 
 import { S_SubscriptionBase } from '@/app/models/subscription.model';
-import { Model } from '@/shared/libs';
+import { Model } from '@/shared/libs/model.lib';
 
 export interface S_User extends S_UserBase, Document {}
 
