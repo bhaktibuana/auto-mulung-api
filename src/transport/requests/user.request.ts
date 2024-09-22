@@ -14,7 +14,9 @@ import {
 	ArrayNotEmpty,
 	ArrayUnique,
 	IsIn,
+	IsNumber,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 import { T_UserRole } from '@/shared/types';
 import { Constant } from '@/shared/constants';
@@ -145,4 +147,47 @@ export class UserUpdateRolesRequestBody {
 	@ArrayUnique()
 	@IsIn(Constant.user.ROLES, { each: true })
 	roles!: T_UserRole[];
+}
+
+export class UserListRequestQuery {
+	@IsString()
+	keyword!: string;
+
+	@Transform(({ value }) => {
+		if (
+			value === 'username' ||
+			value === 'email' ||
+			value === 'updated_at'
+		) {
+			return value;
+		} else return 'created_at';
+	})
+	@IsString()
+	sort_by!: 'username' | 'email' | 'created_at' | 'updated_at';
+
+	@Transform(({ value }) => (value === 'asc' ? 1 : -1))
+	@IsNumber()
+	sort!: 1 | -1;
+
+	@Transform(({ value }) => {
+		const val = Number(value);
+		if (val) {
+			return val < 1 ? 1 : val;
+		} else {
+			return 1;
+		}
+	})
+	@IsNumber()
+	page!: number;
+
+	@Transform(({ value }) => {
+		const val = Number(value);
+		if (val) {
+			return val < 1 ? 1 : val;
+		} else {
+			return 10;
+		}
+	})
+	@IsNumber()
+	per_page!: number;
 }

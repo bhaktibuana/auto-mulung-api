@@ -73,4 +73,16 @@ export class UserResponse {
 			roles: payload.roles,
 		};
 	}
+
+	/**
+	 * User List Response
+	 *
+	 * @param payload
+	 * @returns
+	 */
+	public list(payload: S_User[] | null) {
+		if (payload === null) return null;
+		if (payload.length === 0) return [] as S_User[];
+		return payload;
+	}
 }

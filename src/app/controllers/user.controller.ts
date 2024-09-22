@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import { Controller } from '@/shared/libs/controller.lib';
 import {
+	UserListRequestQuery,
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
 	UserUpdatePasswordRequestBody,
@@ -179,6 +180,34 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.updateRole.name);
+		}
+	}
+
+	/**
+	 * User List Controller
+	 *
+	 * @param req
+	 * @param res
+	 */
+	public async list(req: Request, res: Response): Promise<void> {
+		try {
+			const reqQuery = await this.getRequestQuery(
+				UserListRequestQuery,
+				req,
+			);
+
+			const { users: results, pagination } =
+				await this.userSvc.list(reqQuery);
+
+			this.responsePagination(
+				res,
+				'User list',
+				this.STATUS_CODE.OK,
+				this.userRes.list(results),
+				pagination,
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.list.name);
 		}
 	}
 }

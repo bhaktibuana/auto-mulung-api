@@ -16,5 +16,6 @@ export class UserRouter extends Router<UserController> {
 			'auth',
 			'isAdmin',
 		]);
+		this.get('/', this.controller.list, ['auth', 'isAdmin']);
 	}
 }

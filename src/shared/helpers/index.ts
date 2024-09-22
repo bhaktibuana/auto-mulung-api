@@ -4,7 +4,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { Constant } from '@/shared/constants';
 import { T_JWTPayload } from '@/shared/types';
 import { Config } from '@/config';
-import { I_VerifiedJWT } from '@/shared/interfaces';
+import { I_Pagination, I_VerifiedJWT } from '@/shared/interfaces';
 
 export class Helper {
 	/**
@@ -93,5 +93,32 @@ export class Helper {
 			},
 		);
 		return { error, decoded };
+	}
+
+	/**
+	 * Generate Pagination
+	 *
+	 * @param page
+	 * @param perPage
+	 * @param count
+	 * @returns
+	 */
+	public static generatePagination(
+		page: number,
+		perPage: number,
+		count: number,
+	): I_Pagination | null {
+		const totalPage = count > 0 ? Math.ceil(count / perPage) : 0;
+		const previousPage = page - 1 <= 0 ? null : page - 1;
+		const nextPage = page + 1 > totalPage ? null : page + 1;
+
+		return {
+			current_page: page,
+			previous_page: previousPage,
+			next_page: nextPage,
+			per_page: perPage,
+			total_pages: totalPage,
+			total_items: count,
+		} as I_Pagination;
 	}
 }

@@ -3,6 +3,7 @@ import { ObjectId } from 'bson';
 import { Helper } from '@/shared/helpers';
 import { Service } from '@/shared/libs/service.lib';
 import {
+	UserListRequestQuery,
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
 	UserUpdatePasswordRequestBody,
@@ -11,6 +12,7 @@ import {
 } from '@/transport/requests/user.request';
 import { UserRepository } from '@/app/repositories';
 import { S_User } from '@/app/models';
+import { I_Pagination, I_UserListQueryPayload } from '@/shared/interfaces';
 
 export class UserService extends Service {
 	private userRepo: UserRepository;
@@ -227,7 +229,6 @@ export class UserService extends Service {
 		id: string,
 	): Promise<S_User | null> {
 		try {
-			console.log(id);
 			const updateUser = await this.userRepo.findByIdAndUpdate(
 				new ObjectId(id),
 				{ roles: reqBody.roles },
@@ -243,5 +244,41 @@ export class UserService extends Service {
 			await this.catchErrorHandler(error, this.updateRole.name);
 		}
 		return null;
+	}
+
+	/**
+	 * User List Service
+	 *
+	 * @param reqQiery
+	 * @returns
+	 */
+	public async list(reqQuery: UserListRequestQuery): Promise<{
+		users: S_User[];
+		pagination: I_Pagination | null;
+	}> {
+		try {
+			const keywordArr = reqQuery.keyword.split(':');
+			const keywordKey = keywordArr.length > 1 ? keywordArr[0] : null;
+			const keywordValue =
+				keywordArr.length > 1
+					? keywordArr[1].split(',')
+					: reqQuery.keyword;
+
+			const queryPaylaod: I_UserListQueryPayload = {
+				search: {
+					key: keywordKey,
+					value: keywordValue,
+				},
+				sort_by: reqQuery.sort_by,
+				sort: reqQuery.sort,
+				page: reqQuery.page,
+				per_page: reqQuery.per_page,
+			};
+
+			return await this.userRepo.getList(queryPaylaod);
+		} catch (error) {
+			await this.catchErrorHandler(error, this.list.name);
+		}
+		return { users: [], pagination: null };
 	}
 }

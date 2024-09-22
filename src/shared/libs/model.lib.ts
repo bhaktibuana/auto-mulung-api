@@ -193,4 +193,19 @@ export abstract class Model<T extends Document> {
 			deleted_at: dayjs().toDate(),
 		} as UpdateQuery<T>);
 	}
+
+	/**
+	 * Count Documents
+	 *
+	 * @param query
+	 * @returns
+	 */
+	public async countDocuments(query: RootQuerySelector<T>): Promise<number> {
+		const queryPayload = { ...query, ...this.baseQuery };
+		try {
+			return await this.model.countDocuments(queryPayload).exec();
+		} catch (error) {
+			return 0;
+		}
+	}
 }

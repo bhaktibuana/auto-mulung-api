@@ -22,3 +22,14 @@ export interface I_VerifiedJWT<T> {
 	error: VerifyErrors | null;
 	decoded: (JwtPayload & T) | Object;
 }
+
+export interface I_UserListQueryPayload {
+	search: {
+		key: string | null;
+		value: string | string[];
+	};
+	sort_by: string;
+	sort: 1 | -1;
+	page: number;
+	per_page: number;
+}
