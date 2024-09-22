@@ -7,6 +7,7 @@ import {
 	UserRegisterRequestBody,
 	UserUpdatePasswordRequestBody,
 	UserUpdateRequestBody,
+	UserUpdateRolesRequestBody,
 } from '@/transport/requests/user.request';
 import { UserRepository } from '@/app/repositories';
 import { S_User } from '@/app/models';
@@ -209,7 +210,37 @@ export class UserService extends Service {
 
 			return updateUser;
 		} catch (error) {
-			await this.catchErrorHandler(error, this.update.name);
+			await this.catchErrorHandler(error, this.updatePassword.name);
+		}
+		return null;
+	}
+
+	/**
+	 * User Update Role Service
+	 *
+	 * @param reqBody
+	 * @param id
+	 * @returns
+	 */
+	public async updateRole(
+		reqBody: UserUpdateRolesRequestBody,
+		id: string,
+	): Promise<S_User | null> {
+		try {
+			console.log(id);
+			const updateUser = await this.userRepo.findByIdAndUpdate(
+				new ObjectId(id),
+				{ roles: reqBody.roles },
+			);
+			if (!updateUser)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Udpate role failed',
+				);
+
+			return updateUser;
+		} catch (error) {
+			await this.catchErrorHandler(error, this.updateRole.name);
 		}
 		return null;
 	}

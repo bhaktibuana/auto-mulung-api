@@ -12,5 +12,9 @@ export class UserRouter extends Router<UserController> {
 		this.get('/me', this.controller.me, ['auth']);
 		this.put('/update', this.controller.update, ['auth']);
 		this.put('/update-password', this.controller.updatePassword, ['auth']);
+		this.put('/:id/update-role', this.controller.updateRole, [
+			'auth',
+			'isAdmin',
+		]);
 	}
 }

@@ -59,4 +59,18 @@ export class UserResponse {
 			_id: payload.id,
 		};
 	}
+
+	/**
+	 * User Update Role Response
+	 *
+	 * @param payload
+	 * @returns
+	 */
+	public updateRole(payload: S_User | null) {
+		if (!payload) return null;
+		return {
+			_id: payload.id,
+			roles: payload.roles,
+		};
+	}
 }

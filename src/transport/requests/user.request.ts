@@ -10,9 +10,16 @@ import {
 	Matches,
 	IsEmail,
 	MaxLength,
+	IsArray,
+	ArrayNotEmpty,
+	ArrayUnique,
+	IsIn,
 } from 'class-validator';
 
-@ValidatorConstraint({ async: false })
+import { T_UserRole } from '@/shared/types';
+import { Constant } from '@/shared/constants';
+
+@ValidatorConstraint({ name: 'matchPasswordsConstraint', async: false })
 class MatchPasswordsConstraint implements ValidatorConstraintInterface {
 	validate(password_confirmation: string, args: ValidationArguments) {
 		const [relatedPropertyName] = args.constraints;
@@ -124,4 +131,18 @@ export class UserUpdatePasswordRequestBody {
 	@IsNotEmpty()
 	@MatchPasswords('new_password')
 	new_password_confirmation!: string;
+}
+
+export class UserUpdateRolesRequestParams {
+	@IsString()
+	@IsNotEmpty()
+	id!: string;
+}
+
+export class UserUpdateRolesRequestBody {
+	@IsArray()
+	@ArrayNotEmpty()
+	@ArrayUnique()
+	@IsIn(Constant.user.ROLES, { each: true })
+	roles!: T_UserRole[];
 }

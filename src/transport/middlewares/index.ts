@@ -53,4 +53,25 @@ export class Middleware extends BaseMiddleware {
 			await this.catchErrorHandler(res, error, this.auth.name);
 		}
 	}
+
+	public async isAdmin(_req: Req, res: Res, next: Next): Promise<void> {
+		try {
+			const user = res.locals.user;
+			if (!user)
+				this.errorHandler(
+					this.STATUS_CODE.FORBIDDEN,
+					'Forbidden: Admin only',
+				);
+
+			if (!user.roles?.includes('admin'))
+				this.errorHandler(
+					this.STATUS_CODE.FORBIDDEN,
+					'Forbidden: Admin only',
+				);
+
+			next();
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.isAdmin.name);
+		}
+	}
 }

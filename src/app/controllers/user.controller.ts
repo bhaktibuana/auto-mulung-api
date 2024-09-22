@@ -6,6 +6,8 @@ import {
 	UserRegisterRequestBody,
 	UserUpdatePasswordRequestBody,
 	UserUpdateRequestBody,
+	UserUpdateRolesRequestBody,
+	UserUpdateRolesRequestParams,
 } from '@/transport/requests/user.request';
 import { UserService } from '@/app/services';
 import { UserResponse } from '@/transport/responses/user.response';
@@ -146,6 +148,37 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.updatePassword.name);
+		}
+	}
+
+	/**
+	 * User Update Role controller
+	 *
+	 * @param req
+	 * @param res
+	 */
+	public async updateRole(req: Request, res: Response): Promise<void> {
+		try {
+			const reqParams = await this.getRequestParams(
+				UserUpdateRolesRequestParams,
+				req,
+			);
+
+			const reqBody = await this.getRequestBody(
+				UserUpdateRolesRequestBody,
+				req,
+			);
+
+			const result = await this.userSvc.updateRole(reqBody, reqParams.id);
+
+			this.response(
+				res,
+				'Update role success',
+				this.STATUS_CODE.OK,
+				this.userRes.updateRole(result),
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.updateRole.name);
 		}
 	}
 }
