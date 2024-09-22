@@ -3,7 +3,7 @@ version: '3.8'
 services:
     auto-mulung-api:
         build:
-            context: ..
+            context: .
             dockerfile: ./docker/dockerfile
         container_name: auto-mulung-api
         image: auto-mulung-api
