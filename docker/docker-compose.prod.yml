@@ -3,14 +3,14 @@ version: '3.8'
 services:
     auto-mulung-api:
         build:
-            context: .
+            context: ..
             dockerfile: ./docker/dockerfile
         container_name: auto-mulung-api
         image: auto-mulung-api
         ports:
             - 3090:3090
         env_file:
-            - .env.prod
+            - ../.env.prod
         networks:
             - auto_mulung_api_network
 
