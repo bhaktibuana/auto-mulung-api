@@ -10,7 +10,7 @@ services:
         ports:
             - 3090:3090
         env_file:
-            - .env.prod
+            - ../.env.prod
         networks:
             - auto_mulung_api_network
 
