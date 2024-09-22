@@ -39,5 +39,5 @@ jobs:
                       echo "MAIN_DB_NAME=${{ secrets.PROD_MAIN_DB_NAME }}" >> .env.prod
                       echo "BASE_URL=${{ secrets.PROD_BASE_URL }}" >> .env.prod
                       echo "JWT_SECRET_KEY=${{ secrets.PROD_JWT_SECRET_KEY }}" >> .env.prod
-                      docker-compose -f docker-compose.prod.yml build --no-cache
-                      docker-compose -f docker-compose.prod.yml up -d --force-recreate
+                      docker-compose -f docker/docker-compose.prod.yml build --no-cache
+                      docker-compose -f docker/docker-compose.prod.yml up -d --force-recreate
