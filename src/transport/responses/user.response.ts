@@ -30,4 +30,20 @@ export class UserResponse {
 			token: payload.token,
 		};
 	}
+
+	/**
+	 * User Update Response
+	 *
+	 * @param payload
+	 * @returns
+	 */
+	public update(payload: S_User | null) {
+		if (!payload) return null;
+		return {
+			_id: payload.id,
+			username: payload.username,
+			email: payload.email,
+			wallet_address: payload.wallet_address,
+		};
+	}
 }

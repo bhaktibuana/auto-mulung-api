@@ -5,6 +5,7 @@ import { Service } from '@/shared/libs/service.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
+	UserUpdateRequestBody,
 } from '@/transport/requests/user.request';
 import { UserRepository } from '@/app/repositories';
 import { S_User } from '@/app/models';
@@ -114,6 +115,50 @@ export class UserService extends Service {
 			return user;
 		} catch (error) {
 			await this.catchErrorHandler(error, this.me.name);
+		}
+		return null;
+	}
+
+	/**
+	 * User Update Service
+	 *
+	 * @param reqBody
+	 * @param id
+	 * @returns
+	 */
+	public async update(
+		reqBody: UserUpdateRequestBody,
+		id: string,
+	): Promise<S_User | null> {
+		try {
+			const payload = {
+				username: reqBody.username,
+				email: reqBody.email.toLowerCase(),
+				wallet_address: reqBody.wallet_address,
+			};
+
+			const user = await this.userRepo.findOne({
+				email: { $ne: payload.email },
+			});
+			if (user)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Email already exist',
+				);
+
+			const updateUser = await this.userRepo.findByIdAndUpdate(
+				new ObjectId(id),
+				payload,
+			);
+			if (!updateUser)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Udpate user failed',
+				);
+
+			return updateUser;
+		} catch (error) {
+			await this.catchErrorHandler(error, this.update.name);
 		}
 		return null;
 	}

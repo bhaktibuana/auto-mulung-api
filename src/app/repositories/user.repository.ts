@@ -83,4 +83,24 @@ export class UserRepository extends Repository {
 		}
 		return null;
 	}
+
+	/**
+	 * Find One User by _id and Update
+	 *
+	 * @param id
+	 * @param payload
+	 * @returns
+	 */
+	public async findByIdAndUpdate(
+		id: ObjectId,
+		payload: Partial<S_User>,
+	): Promise<S_User | null> {
+		const user = new User();
+		try {
+			return await user.findByIdAndUpdate(id, payload);
+		} catch (error) {
+			await this.catchErrorHandler(error, this.findByIdAndUpdate.name);
+		}
+		return null;
+	}
 }

@@ -9,6 +9,7 @@ import {
 	MinLength,
 	Matches,
 	IsEmail,
+	MaxLength,
 } from 'class-validator';
 
 @ValidatorConstraint({ async: false })
@@ -77,4 +78,22 @@ export class UserLoginRequestBody {
 	@IsString()
 	@IsNotEmpty()
 	password!: string;
+}
+
+export class UserUpdateRequestBody {
+	@IsString()
+	@IsNotEmpty()
+	@MinLength(3, { message: 'Username must be at least 3 characters long' })
+	@MaxLength(16, {
+		message: 'Username must be not exceed 16 characters long',
+	})
+	username!: string;
+
+	@IsString()
+	@IsNotEmpty()
+	@IsEmail({}, { message: 'Email must be a valid email address' })
+	email!: string;
+
+	@IsString()
+	wallet_address!: string;
 }

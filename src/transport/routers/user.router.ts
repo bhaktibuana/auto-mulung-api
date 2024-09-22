@@ -10,5 +10,6 @@ export class UserRouter extends Router<UserController> {
 		this.post('/register', this.controller.register);
 		this.post('/login', this.controller.login);
 		this.get('/me', this.controller.me, ['auth']);
+		this.put('/update', this.controller.update, ['auth']);
 	}
 }

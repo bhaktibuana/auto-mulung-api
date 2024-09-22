@@ -4,6 +4,7 @@ import { Controller } from '@/shared/libs/controller.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
+	UserUpdateRequestBody,
 } from '@/transport/requests/user.request';
 import { UserService } from '@/app/services';
 import { UserResponse } from '@/transport/responses/user.response';
@@ -71,6 +72,12 @@ export class UserController extends Controller {
 		}
 	}
 
+	/**
+	 * User Me Controller
+	 *
+	 * @param _req
+	 * @param res
+	 */
 	public async me(_req: Request, res: Response): Promise<void> {
 		try {
 			this.response(
@@ -81,6 +88,36 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.me.name);
+		}
+	}
+
+	/**
+	 * User Update controller
+	 *
+	 * @param req
+	 * @param res
+	 */
+	public async update(req: Request, res: Response): Promise<void> {
+		try {
+			const reqBody = await this.getRequestBody(
+				UserUpdateRequestBody,
+				req,
+			);
+
+			const user = this.getLocals(res).user;
+			const result = await this.userSvc.update(
+				reqBody,
+				user._id as string,
+			);
+
+			this.response(
+				res,
+				'Update user success',
+				this.STATUS_CODE.OK,
+				this.userRes.update(result),
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.update.name);
 		}
 	}
 }
