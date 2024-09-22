@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
-import { BaseRouter } from '@/shared/libs';
+import { BaseRouter } from '@/transport/routers/base.router';
+import { UserRouter } from '@/transport/routers/user.router';
 
 export class Routers extends BaseRouter {
 	public readonly appRouter: Router;
@@ -18,5 +19,7 @@ export class Routers extends BaseRouter {
 	 *
 	 * @param router
 	 */
-	private appRoutes(router: Router): void {}
+	private appRoutes(router: Router): void {
+		new UserRouter(router);
+	}
 }

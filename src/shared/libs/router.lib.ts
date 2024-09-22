@@ -24,7 +24,7 @@ export abstract class Router<T> extends Middleware {
 	 */
 	private mapMiddleware(
 		middlewares: T_KeyMiddlewares = [],
-	): RequestHandler[] {
+	) {
 		return middlewares
 			.map((middleware) => {
 				const middlewareFunction = this[middleware];

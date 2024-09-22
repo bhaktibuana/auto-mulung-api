@@ -13,7 +13,7 @@ import {
 export abstract class Model<T extends Document> {
 	protected model: MongoModel<T>;
 	private baseQuery: RootQuerySelector<T> = { deleted_at: null };
-	private baseProjection: ProjectionType<T> = { __v: -1 };
+	private baseProjection: ProjectionType<T> = { __v: 0 };
 	private defaultOptions: QueryOptions<T> = { sort: { created_at: -1 } };
 
 	constructor(model: MongoModel<T>) {
@@ -45,10 +45,8 @@ export abstract class Model<T extends Document> {
 		options: QueryOptions<T> = this.defaultOptions,
 	): Promise<T[]> {
 		const queryPayload = { ...query, ...this.baseQuery };
-		const projectionPayload: ProjectionType<T> = {
-			...(projection as object),
-			...(this.baseProjection as object),
-		};
+		const projectionPayload: ProjectionType<T> =
+			projection || this.baseProjection;
 
 		try {
 			return await this.model
@@ -73,10 +71,8 @@ export abstract class Model<T extends Document> {
 		options: QueryOptions<T> = this.defaultOptions,
 	): Promise<T | null> {
 		const queryPayload = { ...query, ...this.baseQuery };
-		const projectionPayload: ProjectionType<T> = {
-			...(projection as object),
-			...(this.baseProjection as object),
-		};
+		const projectionPayload: ProjectionType<T> =
+			projection || this.baseProjection;
 
 		try {
 			return await this.model
@@ -91,11 +87,15 @@ export abstract class Model<T extends Document> {
 	 * Find One by _id
 	 *
 	 * @param id
+	 * @param projection
 	 * @returns
 	 */
-	public async findById(id: ObjectId): Promise<T | null> {
+	public async findById(
+		id: ObjectId,
+		projection?: ProjectionType<T>,
+	): Promise<T | null> {
 		const query = { _id: id } as RootQuerySelector<T>;
-		return await this.findOne(query);
+		return await this.findOne(query, projection);
 	}
 
 	/**
@@ -192,5 +192,20 @@ export abstract class Model<T extends Document> {
 		return await this.findOneAndUpdate(id, {
 			deleted_at: dayjs().toDate(),
 		} as UpdateQuery<T>);
+	}
+
+	/**
+	 * Count Documents
+	 *
+	 * @param query
+	 * @returns
+	 */
+	public async countDocuments(query: RootQuerySelector<T>): Promise<number> {
+		const queryPayload = { ...query, ...this.baseQuery };
+		try {
+			return await this.model.countDocuments(queryPayload).exec();
+		} catch (error) {
+			return 0;
+		}
 	}
 }

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import mongoose, { Document, Model as MongoModel, Schema } from 'mongoose';
 
-import { Model } from '@/shared/libs';
+import { Model } from '@/shared/libs/model.lib';
 
 export interface S_SystemLog extends S_SystemLogBase, Document {}
 

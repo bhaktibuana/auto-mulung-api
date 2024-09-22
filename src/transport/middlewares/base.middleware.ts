@@ -1,10 +1,11 @@
+import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { SystemLog } from '@/app/models';
-import { AppError } from '@/shared/utils';
+import { AppError, HTTP } from '@/shared/utils';
 import { T_AppErrorData } from '@/shared/types';
 
-export abstract class Service {
+export abstract class BaseMiddleware {
 	protected readonly STATUS_CODE = StatusCodes;
 
 	/**
@@ -25,6 +26,16 @@ export abstract class Service {
 			errorData,
 			this.constructor.name,
 		);
+	}
+
+	/**
+	 * Generate HTTP Error Response
+	 *
+	 * @param res
+	 * @param error
+	 */
+	protected errorResponse<T>(res: Response, error: T): void {
+		HTTP.errorResponse(res, error);
 	}
 
 	/**
@@ -53,25 +64,23 @@ export abstract class Service {
 	}
 
 	/**
-	 * Service Catch Error Handler
+	 * Controller Catch Error Handler
 	 *
+	 * @param res
 	 * @param error
 	 * @param functionName
 	 */
 	protected async catchErrorHandler(
+		res: Response,
 		error: unknown,
 		functionName: string,
 	): Promise<void> {
 		if (error instanceof AppError) {
-			if (error.sourceError === this.constructor.name) {
+			if (error.sourceError === this.constructor.name)
 				await this.systemLog(functionName, error);
-				this.errorHandler(error.statusCode, error.message, error);
-			}
 		} else {
 			await this.systemLog(functionName, error);
 		}
-		const errorMessage =
-			(error as { message: string }).message || 'Internal Server Error';
-		this.errorHandler(this.STATUS_CODE.INTERNAL_SERVER_ERROR, errorMessage, error);
+		this.errorResponse(res, error);
 	}
 }
