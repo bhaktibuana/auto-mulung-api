@@ -4,6 +4,7 @@ import { Controller } from '@/shared/libs/controller.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
+	UserUpdatePasswordRequestBody,
 	UserUpdateRequestBody,
 } from '@/transport/requests/user.request';
 import { UserService } from '@/app/services';
@@ -118,6 +119,33 @@ export class UserController extends Controller {
 			);
 		} catch (error) {
 			await this.catchErrorHandler(res, error, this.update.name);
+		}
+	}
+
+	/**
+	 * User Update Password controller
+	 *
+	 * @param req
+	 * @param res
+	 */
+	public async updatePassword(req: Request, res: Response): Promise<void> {
+		try {
+			const reqBody = await this.getRequestBody(
+				UserUpdatePasswordRequestBody,
+				req,
+			);
+
+			const user = this.getLocals(res).user;
+			const result = await this.userSvc.updatePassword(reqBody, user);
+
+			this.response(
+				res,
+				'Update password success',
+				this.STATUS_CODE.OK,
+				this.userRes.updatePassword(result),
+			);
+		} catch (error) {
+			await this.catchErrorHandler(res, error, this.updatePassword.name);
 		}
 	}
 }

@@ -46,4 +46,17 @@ export class UserResponse {
 			wallet_address: payload.wallet_address,
 		};
 	}
+
+	/**
+	 * User Update Password Response
+	 *
+	 * @param payload
+	 * @returns
+	 */
+	public updatePassword(payload: S_User | null) {
+		if (!payload) return null;
+		return {
+			_id: payload.id,
+		};
+	}
 }

@@ -5,6 +5,7 @@ import { Service } from '@/shared/libs/service.lib';
 import {
 	UserLoginRequestBody,
 	UserRegisterRequestBody,
+	UserUpdatePasswordRequestBody,
 	UserUpdateRequestBody,
 } from '@/transport/requests/user.request';
 import { UserRepository } from '@/app/repositories';
@@ -131,6 +132,7 @@ export class UserService extends Service {
 		id: string,
 	): Promise<S_User | null> {
 		try {
+			const userId = new ObjectId(id);
 			const payload = {
 				username: reqBody.username,
 				email: reqBody.email.toLowerCase(),
@@ -138,7 +140,8 @@ export class UserService extends Service {
 			};
 
 			const user = await this.userRepo.findOne({
-				email: { $ne: payload.email },
+				_id: { $ne: userId },
+				email: payload.email,
 			});
 			if (user)
 				this.errorHandler(
@@ -147,13 +150,61 @@ export class UserService extends Service {
 				);
 
 			const updateUser = await this.userRepo.findByIdAndUpdate(
-				new ObjectId(id),
+				userId,
 				payload,
 			);
 			if (!updateUser)
 				this.errorHandler(
 					this.STATUS_CODE.BAD_REQUEST,
 					'Udpate user failed',
+				);
+
+			return updateUser;
+		} catch (error) {
+			await this.catchErrorHandler(error, this.update.name);
+		}
+		return null;
+	}
+
+	/**
+	 * User Update Password Service
+	 *
+	 * @param reqBody
+	 * @param userLocal
+	 * @returns
+	 */
+	public async updatePassword(
+		reqBody: UserUpdatePasswordRequestBody,
+		userLocal: S_User,
+	): Promise<S_User | null> {
+		try {
+			const payload = {
+				email: (userLocal.email as string).toLowerCase(),
+				password: Helper.hash(reqBody.password),
+				new_password: Helper.hash(reqBody.new_password),
+			};
+
+			const user = await this.userRepo.findOne(
+				{
+					email: payload.email,
+					password: payload.password,
+				},
+				{ email: 1 },
+			);
+			if (!user)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Incorrect password',
+				);
+
+			const updateUser = await this.userRepo.findByIdAndUpdate(
+				new ObjectId(userLocal._id as string),
+				{ password: payload.new_password },
+			);
+			if (!updateUser)
+				this.errorHandler(
+					this.STATUS_CODE.BAD_REQUEST,
+					'Udpate password failed',
 				);
 
 			return updateUser;
